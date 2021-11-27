@@ -8,10 +8,11 @@ import java.util.concurrent.Callable;
 
 import static utility.Utility.*;
 
-enum ObjType {blob, tree, commit, tag}
 
 @Command(name = "cat-file", mixinStandardHelpOptions = true, description = "Print content of git object")
 public class GitCatFileCli implements Callable<Integer> {
+    enum ObjType {blob, tree, commit, tag}
+
     @CommandLine.Parameters(index = "0", description = "format of git object: [${COMPLETION-CANDIDATES}]")
     ObjType format;
 
@@ -22,7 +23,7 @@ public class GitCatFileCli implements Callable<Integer> {
     public Integer call() {
         var repo = GitRepository.findGitRepo();
         var obj = readGitObject(repo, hashVal);
-        PrintLog("Content of obj: " + hashVal, MsgLevel.INFO);
+        printLog("Content of obj: " + hashVal, MsgLevel.INFO);
         System.out.println(obj.serialize());
         return 0;
     }

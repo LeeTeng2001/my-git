@@ -8,7 +8,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
-import static utility.Utility.*;
+import static utility.Utility.MsgLevel;
+import static utility.Utility.printLog;
 
 public class GitRepository {
     Path workTree;
@@ -33,7 +34,7 @@ public class GitRepository {
         var parentFolder = getRepoDirPath(originalPath.getParent(), mkdir);
 
         if (parentFolder == null) {
-            PrintLog("Error when checking parent folder: " + originalPath, MsgLevel.ERROR);
+            printLog("Error when checking parent folder: " + originalPath, MsgLevel.ERROR);
             return null;
         }
 
@@ -48,7 +49,7 @@ public class GitRepository {
         if (file.exists()) {
             if (file.isDirectory()) return path;
             else {
-                PrintLog("Not a directory: " + path, MsgLevel.ERROR);
+                printLog("Not a directory: " + path, MsgLevel.ERROR);
                 return null;
             }
         }
@@ -59,13 +60,13 @@ public class GitRepository {
                 Files.createDirectories(path);
                 return path;
             } catch (IOException e) {
-                PrintLog("Error when trying to create directory: " + path, MsgLevel.ERROR);
+                printLog("Error when trying to create directory: " + path, MsgLevel.ERROR);
                 e.printStackTrace();
                 return null;
             }
         }
 
-        PrintLog("Directory doesn't exist and mkdir=false: " + originalPath, MsgLevel.WARNING);
+        printLog("Directory doesn't exist and mkdir=false: " + originalPath, MsgLevel.WARNING);
         return null;
     }
 
@@ -76,11 +77,11 @@ public class GitRepository {
         // make sure directory empty or not exist before proceeding
         if (createPath.exists()) {
             if (createPath.isDirectory() && createPath.list().length != 0) {
-                PrintLog("Directory is not empty: " + target, MsgLevel.ERROR);
+                printLog("Directory is not empty: " + target, MsgLevel.ERROR);
                 return 1;
             }
             else if (createPath.isFile()){
-                PrintLog("Target directory is a file: " + target, MsgLevel.ERROR);
+                printLog("Target directory is a file: " + target, MsgLevel.ERROR);
                 return 1;
             }
         }
@@ -110,9 +111,9 @@ public class GitRepository {
             content = Arrays.asList("[core]", "\trepositoryformatversion = 0", "\tfilemode = false", "\tbare = false", "\tignorecase = true");
             Files.write(newRepo.getRepoFilePath(Path.of("config"), true), content, StandardCharsets.UTF_8);
 
-            PrintLog("Successfully initialized git directory at: " + target, MsgLevel.SUCCESS);
+            printLog("Successfully initialized git directory at: " + target, MsgLevel.SUCCESS);
         } catch (IOException e) {
-            PrintLog("Error when trying to create directory for git", MsgLevel.ERROR);
+            printLog("Error when trying to create directory for git", MsgLevel.ERROR);
             e.printStackTrace();
             return 1;
         }
@@ -123,7 +124,7 @@ public class GitRepository {
     // Recursively find git repository work directory
     public static GitRepository findGitRepo(Path from) {
         if (from == null) {
-            PrintLog("Cannot find git repo for null!", MsgLevel.ERROR);
+            printLog("Cannot find git repo for null!", MsgLevel.ERROR);
             return null;
         }
 

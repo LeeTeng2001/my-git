@@ -6,7 +6,8 @@ import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-import static utility.Utility.*;
+import static utility.Utility.MsgLevel;
+import static utility.Utility.printLog;
 
 @Command(name = "init", mixinStandardHelpOptions = true, description = "Initialise a git repository")
 public class GitInitCli implements Callable<Integer> {
@@ -16,7 +17,7 @@ public class GitInitCli implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        PrintLog("Initialising git repository at: " + path, MsgLevel.INFO);
+        printLog("Initialising git repository at: " + path, MsgLevel.INFO);
         return GitRepository.createGitRepo(path);
     }
 }
