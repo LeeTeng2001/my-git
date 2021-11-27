@@ -30,10 +30,10 @@ public class GitHashObjectCli implements Callable<Integer> {
             var content = Files.readString(Path.of(objPath));
             var curRepo = GitRepository.findGitRepo();
             var gitObject = switch (format) {
-                case blob -> new GitBlob(curRepo, content);
-                case commit -> new GitCommit(curRepo, content);
-                case tag -> new GitTag(curRepo, content);
-                case tree -> new GitTree(curRepo, content);
+                case blob -> new GitBlob(curRepo, content.getBytes());
+                case commit -> new GitCommit(curRepo, content.getBytes());
+                case tag -> new GitTag(curRepo, content.getBytes());
+                case tree -> new GitTree(curRepo, content.getBytes());
             };
             var computedHash = writeGitObject(gitObject, write);
             printLog("Object hash is: " + computedHash, MsgLevel.INFO);

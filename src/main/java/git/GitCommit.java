@@ -7,7 +7,7 @@ import static utility.Utility.*;
 public class GitCommit extends GitObject {
     public TreeMap<String, String> map;
 
-    public GitCommit(GitRepository repo, String data) {
+    public GitCommit(GitRepository repo, byte[] data) {
         this.format = "commit";
         this.repo = repo;
         map = new TreeMap<>();
@@ -20,8 +20,8 @@ public class GitCommit extends GitObject {
     }
 
     @Override
-    public void deserialize(String data) {
-        parseGitKeyValue(data, map, 0);
+    public void deserialize(byte[] data) {
+        deserializeGitKeyValue(data, map, 0);
     }
 
     public void printCommit(String myHash) {

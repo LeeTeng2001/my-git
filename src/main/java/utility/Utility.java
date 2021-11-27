@@ -6,9 +6,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.TreeMap;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
-import java.util.zip.InflaterInputStream;
+import java.util.zip.Inflater;
 
 public class Utility {
     public enum MsgLevel {
@@ -35,6 +37,24 @@ public class Utility {
         }
     }
 
+    public static int indexOfByte(byte[] array, byte target, int start) {
+        for (int i = start; i < array.length; i++) {
+            if (array[i] == target) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int indexOfByte(byte[] array, byte target) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == target) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public static GitObject readGitObject(GitRepository repo, String hash) {
         if (hash.length() != 40) {
             printLog("Hash length mismatch, must equal to 40: " + hash.length(), MsgLevel.ERROR);
@@ -51,29 +71,31 @@ public class Utility {
 
         try {
             // Decompress git object using zlib
-            InputStream in = new InflaterInputStream(new FileInputStream(objPath.toFile()));
-            OutputStream out = new ByteArrayOutputStream();
-            var buffer = new byte[1000];
-            int len;
-            while((len = in.read(buffer)) > 0)
+            var file = new FileInputStream(objPath.toFile());
+            var inflator = new Inflater();
+            inflator.setInput(file.readAllBytes());  // TODO: Fix read all bytes!!!!!
+            var out = new ByteArrayOutputStream();
+            var buffer = new byte[10];
+            while (!inflator.finished()) {
+                int len = inflator.inflate(buffer);
                 out.write(buffer, 0, len);
-            in.close();
+            }
 
-            // Process git data according to specification ------------
-            var data = out.toString();
-            var fmtSeparator  = data.indexOf(' ');
-            var format = data.substring(0, fmtSeparator);
+            // Process git data according to specification, note to self, DON'T use STRING for TREE data!!!!  ------------
+            var data = out.toByteArray();
+            var fmtSeparator  = indexOfByte(data, (byte) ' ');
+            var format = new String(data, 0, fmtSeparator);
 
-            var contentLenSeparator = data.indexOf('\0', fmtSeparator);
-            var contentLen = Integer.parseInt(data.substring(fmtSeparator + 1, contentLenSeparator));
-            var content = data.substring(contentLenSeparator + 1);
+            var contentLenSeparator = indexOfByte(data, (byte) '\0');
+            var contentLen = Integer.parseInt(new String(data, fmtSeparator + 1, contentLenSeparator - fmtSeparator - 1));
+            var content = Arrays.copyOfRange(data, contentLenSeparator + 1, data.length);
 
-            if (contentLen != content.length()) {
-                printLog("Git content length mismatch: " + contentLen + " != " + content.length(), MsgLevel.ERROR);
+            if (contentLen != content.length) {
+                printLog("Git content length mismatch: " + contentLen + " != " + content.length, MsgLevel.ERROR);
                 return null;
             }
 
-            // Return git object depends on its type
+            // Return git object depending on its type
             return switch (format) {
                 case "blob" -> new GitBlob(repo, content);
                 case "commit" -> new GitCommit(repo, content);
@@ -86,7 +108,7 @@ public class Utility {
             printLog("Cannot find file in git repo: " + objPath, MsgLevel.ERROR);
             e.printStackTrace();
             return null;
-        } catch (IOException e) {
+        } catch (IOException | DataFormatException e) {
             e.printStackTrace();
         }
 
@@ -127,25 +149,27 @@ public class Utility {
         return sha1;
     }
 
-    public static void parseGitKeyValue(String rawContent, TreeMap<String, String> map, int startPos) {
+    // Parse key-value file format used by commit and tag
+    public static void deserializeGitKeyValue(byte[] rawContent, TreeMap<String, String> map, int startPos) {
         // Tag and commit share the same file format
-        var space = rawContent.indexOf(' ', startPos);
-        var newLine = rawContent.indexOf('\n', startPos);
+        var space = indexOfByte(rawContent, (byte)' ', startPos);
+        var newLine = indexOfByte(rawContent, (byte)'\n', startPos);
 
         // Base case
         if (space == -1 || space > newLine) {
-            map.put("", rawContent.substring(startPos));
+            map.put("", new String(rawContent, startPos, rawContent.length - startPos));
             return;
         }
 
-        var key = rawContent.substring(startPos, space);
-        var value = rawContent.substring(space + 1, newLine);
+        var key = new String(rawContent, startPos, space - startPos);
+        var value = new String(rawContent, space + 1, newLine - space - 1);
         map.put(key, value);
 
         // Recursive
-        parseGitKeyValue(rawContent, map, newLine + 1);
+        deserializeGitKeyValue(rawContent, map, newLine + 1);
     }
 
+    // Serialize key-value object to git file format
     public static String serializeGitKeyValue(TreeMap<String, String> map) {
         StringBuilder result = new StringBuilder();
 
@@ -158,4 +182,6 @@ public class Utility {
 
         return result.toString();
     }
+
+
 }

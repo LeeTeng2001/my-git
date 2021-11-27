@@ -5,5 +5,5 @@ public abstract class GitObject {
     public String format = null;
 
     abstract public String serialize();
-    abstract public void deserialize(String data);
+    abstract public void deserialize(byte[] data);
 }
