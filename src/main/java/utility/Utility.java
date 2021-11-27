@@ -1,13 +1,12 @@
 package utility;
 
-import git.GitBlob;
-import git.GitObject;
-import git.GitRepository;
+import git.*;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.TreeMap;
 import java.util.zip.Deflater;
 import java.util.zip.InflaterInputStream;
 
@@ -20,11 +19,12 @@ public class Utility {
     }
 
     // Terminal output colour
-    static final String RESET = "\033[0m";
+    public static final String RESET = "\033[0m";
     static final String RED = "\033[0;31m";
     static final String GREEN = "\033[0;32m";
     static final String YELLOW = "\033[0;33m";
     static final String BLUE = "\033[0;34m";
+    public static final String YELLOW_BOLD = "\033[1;33m";
 
     public static void printLog(String msg, MsgLevel level) {
         switch (level) {
@@ -74,13 +74,14 @@ public class Utility {
             }
 
             // Return git object depends on its type
-            GitObject gitObject = null;
-            // TODO: Consider more format
-            if (format.equals("blob"))  {
-                gitObject = new GitBlob(repo, content);
-            }
+            return switch (format) {
+                case "blob" -> new GitBlob(repo, content);
+                case "commit" -> new GitCommit(repo, content);
+                case "tag" -> new GitTag(repo, content);
+                case "tree" -> new GitTree(repo, content);
+                default -> null;
+            };
 
-            return gitObject;
         } catch (FileNotFoundException e) {
             printLog("Cannot find file in git repo: " + objPath, MsgLevel.ERROR);
             e.printStackTrace();
@@ -124,5 +125,37 @@ public class Utility {
         }
 
         return sha1;
+    }
+
+    public static void parseGitKeyValue(String rawContent, TreeMap<String, String> map, int startPos) {
+        // Tag and commit share the same file format
+        var space = rawContent.indexOf(' ', startPos);
+        var newLine = rawContent.indexOf('\n', startPos);
+
+        // Base case
+        if (space == -1 || space > newLine) {
+            map.put("", rawContent.substring(startPos));
+            return;
+        }
+
+        var key = rawContent.substring(startPos, space);
+        var value = rawContent.substring(space + 1, newLine);
+        map.put(key, value);
+
+        // Recursive
+        parseGitKeyValue(rawContent, map, newLine + 1);
+    }
+
+    public static String serializeGitKeyValue(TreeMap<String, String> map) {
+        StringBuilder result = new StringBuilder();
+
+        for (var key : map.descendingKeySet()) {
+            result.append(key);
+            result.append(' ');
+            result.append(map.get(key));
+            result.append('\n');
+        }
+
+        return result.toString();
     }
 }

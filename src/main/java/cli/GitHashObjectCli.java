@@ -1,7 +1,6 @@
 package cli;
 
-import git.GitBlob;
-import git.GitRepository;
+import git.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -27,13 +26,18 @@ public class GitHashObjectCli implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        // TODO: Consider format
         try {
             var content = Files.readString(Path.of(objPath));
             var curRepo = GitRepository.findGitRepo();
-            var gitObject = new GitBlob(curRepo, content);
+            var gitObject = switch (format) {
+                case blob -> new GitBlob(curRepo, content);
+                case commit -> new GitCommit(curRepo, content);
+                case tag -> new GitTag(curRepo, content);
+                case tree -> new GitTree(curRepo, content);
+            };
             var computedHash = writeGitObject(gitObject, write);
             printLog("Object hash is: " + computedHash, MsgLevel.INFO);
+
         } catch (IOException e) {
             printLog("File doesn't exist at: " + objPath, MsgLevel.ERROR);
             e.printStackTrace();

@@ -4,8 +4,8 @@ public class GitBlob extends GitObject {
     String data;
 
     public GitBlob(GitRepository repo, String data) {
-        this.repo = repo;
         this.format = "blob";
+        this.repo = repo;
         deserialize(data);
     }
 

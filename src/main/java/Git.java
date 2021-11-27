@@ -1,6 +1,7 @@
 import cli.GitCatFileCli;
 import cli.GitHashObjectCli;
 import cli.GitInitCli;
+import cli.GitLogCli;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -13,6 +14,7 @@ import static utility.Utility.printLog;
         GitInitCli.class,
         GitCatFileCli.class,
         GitHashObjectCli.class,
+        GitLogCli.class,
 })
 public class Git implements Callable<Integer> {
     @Override
