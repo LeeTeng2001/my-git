@@ -16,7 +16,7 @@ public class GitRepository {
 
     public GitRepository(Path root) {
         workTree = root;
-        gitDir = root.resolve(".git");
+        gitDir = workTree.resolve(".git");
 
         // TODO: Read ini config file
     }
@@ -28,7 +28,10 @@ public class GitRepository {
 
     // Same as getRepoPath but will mkdir parent folder if specified, need absolute path to avoid null pointer
     public Path getRepoFilePath(Path originalPath, boolean mkdir) {
-        var parentFolder = getRepoDirPath(originalPath.toAbsolutePath().getParent(), mkdir);
+        if (originalPath.getParent() == null)
+            return originalPath;  // root file
+        var parentFolder = getRepoDirPath(originalPath.getParent(), mkdir);
+
         if (parentFolder == null) {
             PrintLog("Error when checking parent folder: " + originalPath, MsgLevel.ERROR);
             return null;
