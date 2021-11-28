@@ -183,5 +183,29 @@ public class Utility {
         return result.toString();
     }
 
+    // Recursively create original object from git tree
+    public static void reconstructTree(GitRepository repo, GitTree tree, Path path) {
+        for (var leaf: tree.leaves) {
+            var obj = readGitObject(repo, leaf.sha);
+            var objPath = path.resolve(leaf.path);
 
+            if (leaf.fmt.equals("tree")) {
+                objPath.toFile().mkdirs();
+                reconstructTree(repo, (GitTree) obj, objPath);
+            }
+            else if (leaf.fmt.equals("blob")) {
+                try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(objPath.toString()), StandardCharsets.UTF_8))) {
+                    writer.write(obj.serialize());
+                } catch (IOException e) {
+                    printLog("Error when trying to write to: " + objPath, MsgLevel.ERROR);
+                    e.printStackTrace();
+                    return;
+                }
+            }
+            else {
+                printLog("Format not supported for: " + leaf.fmt, MsgLevel.WARNING);
+            }
+        }
+    }
 }

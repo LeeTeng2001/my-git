@@ -7,12 +7,15 @@ import java.util.concurrent.Callable;
 import static utility.Utility.MsgLevel;
 import static utility.Utility.printLog;
 
+// TODO: Add commit, real checkout, check status, I think no staging
+
 @Command(name = "cli", mixinStandardHelpOptions = true, subcommands = {
         GitInitCli.class,
         GitCatFileCli.class,
         GitHashObjectCli.class,
         GitLogCli.class,
         GitLsTreeCli.class,
+        GitReconstructCli.class,
 })
 public class Git implements Callable<Integer> {
     @Override

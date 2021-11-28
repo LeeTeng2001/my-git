@@ -11,12 +11,7 @@ import static utility.Utility.*;
 
 @Command(name = "cat-file", mixinStandardHelpOptions = true, description = "Print content of git object")
 public class GitCatFileCli implements Callable<Integer> {
-    enum ObjType {blob, tree, commit, tag}
-
-    @CommandLine.Parameters(index = "0", description = "format of git object: [${COMPLETION-CANDIDATES}]")
-    ObjType format;
-
-    @CommandLine.Parameters(index = "1", description = "hash value of the git object")
+    @CommandLine.Parameters(index = "0", description = "hash value of the git object")
     String hashVal;
 
     @Override
