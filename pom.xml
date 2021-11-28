@@ -15,13 +15,6 @@
             <version>4.6.2</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.ini4j/ini4j -->
-        <dependency>
-            <groupId>org.ini4j</groupId>
-            <artifactId>ini4j</artifactId>
-            <version>0.5.4</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
         <dependency>
             <groupId>commons-codec</groupId>

@@ -12,13 +12,19 @@ import static utility.Utility.*;
 @Command(name = "cat-file", mixinStandardHelpOptions = true, description = "Print content of git object")
 public class GitCatFileCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", description = "hash value of the git object")
-    String hashVal;
+    String name;
 
     @Override
     public Integer call() {
         var repo = GitRepository.findGitRepo();
-        var obj = readGitObject(repo, hashVal);
-        printLog("Content of obj: " + hashVal, MsgLevel.INFO);
+        var absHash = fuzzyNameMatch(repo, name);
+        if (absHash == null) {
+            printLog("Name doesn't have a match: " + name, MsgLevel.ERROR);
+            return 1;
+        }
+
+        var obj = readGitObject(repo, absHash);
+        printLog("Content of obj " + absHash + " is: ", MsgLevel.INFO);
         System.out.println(obj.serialize());
         return 0;
     }

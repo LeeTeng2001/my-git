@@ -14,7 +14,7 @@ import static utility.Utility.*;
 @Command(name = "reconstruct", mixinStandardHelpOptions = true, description = "Reconstruct a commit inside of a directory.")
 public class GitReconstructCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", description = "Commit or tree to checkout")
-    String hashVal;
+    String name;
 
     @CommandLine.Parameters(index = "1", description = "Directory must be EMPTY, instantiate the tree in that directory")
     String directory;
@@ -22,7 +22,13 @@ public class GitReconstructCli implements Callable<Integer> {
     @Override
     public Integer call() {
         var repo = GitRepository.findGitRepo();
-        var gitObj = readGitObject(repo, hashVal);
+        var absHash = fuzzyNameMatch(repo, name);
+        if (absHash == null) {
+            printLog("Name doesn't have a match: " + name, MsgLevel.ERROR);
+            return 1;
+        }
+
+        var gitObj = readGitObject(repo, absHash);
         if (gitObj.format.equals("commit")) {  // turn commit into tree
             var commit = ((GitCommit) gitObj).map.get("tree");
             gitObj = readGitObject(repo, commit);

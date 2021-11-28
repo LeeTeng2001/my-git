@@ -18,8 +18,11 @@ public class GitRepository {
     public GitRepository(Path root) {
         workTree = root;
         gitDir = workTree.resolve(".git");
+    }
 
-        // TODO: Read ini config file
+    // Return a relative path from git from absolute path, useful when you want only relative path output
+    public Path getRelativePath(Path absPath) {
+        return gitDir.relativize(absPath);
     }
 
     // Return path under git directory from original path

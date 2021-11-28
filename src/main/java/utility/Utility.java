@@ -5,7 +5,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.zip.DataFormatException;
@@ -56,8 +58,8 @@ public class Utility {
     }
 
     public static GitObject readGitObject(GitRepository repo, String hash) {
-        if (hash.length() != 40) {
-            printLog("Hash length mismatch, must equal to 40: " + hash.length(), MsgLevel.ERROR);
+        if (hash == null) {  // from name resolve function
+            printLog("Hash is null before reading git object ", MsgLevel.ERROR);
             return null;
         }
 
@@ -207,5 +209,107 @@ public class Utility {
                 printLog("Format not supported for: " + leaf.fmt, MsgLevel.WARNING);
             }
         }
+    }
+
+    private static String resolveRef(Path filePath) {
+        // Reference file is always in ASCII / UTF-8 compatible, strip newline
+        try {
+            String content = Files.readString(filePath, StandardCharsets.UTF_8).replace("\n", "");
+//            printLog("Reference file content: " + content, MsgLevel.INFO);
+
+            // Check for indirect reference
+            if (content.startsWith("ref: "))
+                return resolveRef(Path.of(content.substring(5)));
+            return content;
+
+        } catch (IOException e) {
+            printLog("Cannot read file: " + filePath, MsgLevel.ERROR);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static void getAllRefs(Path dirPath, TreeMap<String, String> res) {
+        var children = dirPath.toFile().listFiles();
+        if (children == null) return;
+
+        for (var file: children) {
+            if (file.isDirectory()) {
+                getAllRefs(file.toPath(), res);
+            }
+            else {
+                res.put(file.toString(), resolveRef(file.toPath()));
+            }
+        }
+    }
+
+    public static TreeMap<String, String> getAllRefs(GitRepository repo) {
+        // Ordered map because we want to maintain insertion order
+        var res = new TreeMap<String, String>();
+        var refRoot = repo.getRepoDirPath(Path.of("refs"), false);
+        getAllRefs(refRoot, res);
+        return res;
+    }
+
+    // Git-like resolve name feature, return object hash
+    private static ArrayList<String> hashNameResolve(GitRepository repo, String name) {
+        var candidates = new ArrayList<String>();
+
+        // Check special case first
+        if (name.isEmpty()) {
+            return candidates;
+        }
+        else if (name.equals("HEAD")) {
+            candidates.add(resolveRef(repo.getRepoFilePath(Path.of("HEAD"), false)));
+            return candidates;
+        }
+        else if (name.length() == 40) {
+            candidates.add(name);
+            return candidates;  // Very crude hash check by length
+        }
+        else if (name.length() > 40 || name.length() < 4) {  // minimum and maximum hash length
+            return candidates;
+        }
+
+        // Otherwise, find matching name
+        var hashFolderPath = repo.getRepoPath(Path.of("objects", name.substring(0, 2))).toFile();
+        if (hashFolderPath.isDirectory()) {  // exist and has a directory
+            var candidatePrefix = name.substring(2);
+            var files = hashFolderPath.listFiles();
+            if (files == null) return candidates;
+
+            // If file name start with our target prefix, add this file to candidate
+            for (var file: files) {
+                if (file.getName().startsWith(candidatePrefix)) {
+                    candidates.add(hashFolderPath.getName() + file.getName());
+                }
+            }
+        }
+
+        return candidates;
+    }
+
+    // Public api, will check hash and tags
+    public static String fuzzyNameMatch(GitRepository repo, String candidate) {
+        var candidates = hashNameResolve(repo, candidate);
+        if (candidates.size() > 1) {
+            printLog("Has more than one candidates, ambiguous hash: ", MsgLevel.ERROR);
+            for (var item : candidates) {
+                System.out.println(item);
+            }
+        }
+        else if (candidates.size() == 1)
+            return candidates.get(0);
+
+        // Check for references
+        var allReferences = getAllRefs(repo);
+        for (var key : allReferences.descendingKeySet()) {
+            if (Path.of(key).toFile().getName().equals(candidate)) {
+                return resolveRef(Path.of(key));
+            }
+        }
+
+        // No match
+        return null;
     }
 }

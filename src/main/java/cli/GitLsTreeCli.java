@@ -13,12 +13,18 @@ import static utility.Utility.*;
 @Command(name = "ls-tree", mixinStandardHelpOptions = true, description = "Pretty-print a tree object.")
 public class GitLsTreeCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", description = "hash value of the tree object")
-    String treeHash;
+    String name;
 
     @Override
     public Integer call() {
         var repo = GitRepository.findGitRepo();
-        var obj = readGitObject(repo, treeHash);
+        var absHash = fuzzyNameMatch(repo, name);
+        if (absHash == null) {
+            printLog("Name doesn't have a match: " + name, MsgLevel.ERROR);
+            return 1;
+        }
+
+        var obj = readGitObject(repo, absHash);
 
         if (obj.format.equals("commit")) {
             var commit = (GitCommit) obj;

@@ -11,16 +11,20 @@ import static utility.Utility.*;
 
 @Command(name = "log", mixinStandardHelpOptions = true, description = "Display history from a given commit.")
 public class GitLogCli implements Callable<Integer> {
-    // TODO: Optional non value = head
     @CommandLine.Parameters(index = "0",
                             description = "The starting commit.")
-    String startHash;
+    String name;
 
     @Override
     public Integer call() {
-        printLog("Showing history from: " + startHash, MsgLevel.INFO);
         var repo = GitRepository.findGitRepo();
-        showCommit(repo, startHash);
+        var absHash = fuzzyNameMatch(repo, name);
+        if (absHash == null) {
+            printLog("Name doesn't have a match: " + name, MsgLevel.ERROR);
+            return 1;
+        }
+        printLog("Showing history from: " + absHash, MsgLevel.INFO);
+        showCommit(repo, absHash);
         return 0;
     }
 
