@@ -4,10 +4,8 @@ import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-import static utility.Utility.MsgLevel;
-import static utility.Utility.printLog;
-
-// TODO: Add commit + update head file, naming resolve, git status
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
 @Command(name = "git", mixinStandardHelpOptions = true, subcommands = {
         GitInitCli.class,
@@ -15,9 +13,11 @@ import static utility.Utility.printLog;
         GitHashObjectCli.class,
         GitLogCli.class,
         GitLsTreeCli.class,
-        GitReconstructCli.class,
+        GitRestoreCli.class,
         GitShowRefCli.class,
         GitTagCli.class,
+        GitStatusCli.class,
+        GitCommitCli.class,
 })
 public class Git implements Callable<Integer> {
     @Override

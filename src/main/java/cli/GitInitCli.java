@@ -6,8 +6,8 @@ import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-import static utility.Utility.MsgLevel;
-import static utility.Utility.printLog;
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
 @Command(name = "init", mixinStandardHelpOptions = true, description = "Initialise a git repository")
 public class GitInitCli implements Callable<Integer> {

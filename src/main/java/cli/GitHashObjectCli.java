@@ -9,7 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
-import static utility.Utility.*;
+import static helper.Function.writeGitObject;
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
 @Command(name = "hash-object", mixinStandardHelpOptions = true, description = "Compute object ID and optionally create blob file")
 public class GitHashObjectCli implements Callable<Integer> {

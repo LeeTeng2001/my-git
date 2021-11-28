@@ -6,7 +6,10 @@ import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-import static utility.Utility.*;
+import static helper.Function.fuzzyNameMatch;
+import static helper.Function.readGitObject;
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
 
 @Command(name = "cat-file", mixinStandardHelpOptions = true, description = "Print content of git object")

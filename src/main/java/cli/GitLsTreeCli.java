@@ -8,7 +8,10 @@ import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-import static utility.Utility.*;
+import static helper.Function.fuzzyNameMatch;
+import static helper.Function.readGitObject;
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
 @Command(name = "ls-tree", mixinStandardHelpOptions = true, description = "Pretty-print a tree object.")
 public class GitLsTreeCli implements Callable<Integer> {

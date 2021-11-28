@@ -3,8 +3,8 @@ package git;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static utility.Utility.indexOfByte;
-import static utility.Utility.readGitObject;
+import static helper.Function.readGitObject;
+import static helper.Utility.indexOfByte;
 
 public class GitTree extends GitObject {
     public ArrayList<Leaf> leaves;

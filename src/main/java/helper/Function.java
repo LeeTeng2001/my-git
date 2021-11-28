@@ -1,4 +1,4 @@
-package utility;
+package helper;
 
 import git.*;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -14,52 +14,10 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-public class Utility {
-    public enum MsgLevel {
-        INFO,
-        SUCCESS,
-        WARNING,
-        ERROR,
-    }
-
-    // Terminal output colour
-    public static final String RESET = "\033[0m";
-    static final String RED = "\033[0;31m";
-    static final String GREEN = "\033[0;32m";
-    static final String YELLOW = "\033[0;33m";
-    static final String BLUE = "\033[0;34m";
-    public static final String YELLOW_BOLD = "\033[1;33m";
-
-    public static void printLog(String msg, MsgLevel level) {
-        switch (level) {
-            case INFO -> System.out.println(BLUE + "[Info] " + msg + RESET);
-            case SUCCESS -> System.out.println(GREEN + "[Success] " + msg + RESET);
-            case WARNING -> System.out.println(YELLOW + "[Warning] " + msg + RESET);
-            case ERROR -> System.out.println(RED + "[Error] " + msg + RESET);
-        }
-    }
-
-    public static int indexOfByte(byte[] array, byte target, int start) {
-        for (int i = start; i < array.length; i++) {
-            if (array[i] == target) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public static int indexOfByte(byte[] array, byte target) {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == target) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
+public class Function {
     public static GitObject readGitObject(GitRepository repo, String hash) {
         if (hash == null) {  // from name resolve function
-            printLog("Hash is null before reading git object ", MsgLevel.ERROR);
+            Utility.printLog("Hash is null before reading git object ", Utility.MsgLevel.ERROR);
             return null;
         }
 
@@ -67,7 +25,7 @@ public class Utility {
         objPath = repo.getRepoFilePath(objPath, false);
 
         if (!objPath.toFile().exists() || objPath.toFile().isDirectory()) {
-            printLog("Git object file doesn't exist or is a directory: " + objPath, MsgLevel.ERROR);
+            Utility.printLog("Git object file doesn't exist or is a directory: " + objPath, Utility.MsgLevel.ERROR);
             return null;
         }
 
@@ -85,15 +43,15 @@ public class Utility {
 
             // Process git data according to specification, note to self, DON'T use STRING for TREE data!!!!  ------------
             var data = out.toByteArray();
-            var fmtSeparator  = indexOfByte(data, (byte) ' ');
+            var fmtSeparator  = Utility.indexOfByte(data, (byte) ' ');
             var format = new String(data, 0, fmtSeparator);
 
-            var contentLenSeparator = indexOfByte(data, (byte) '\0');
+            var contentLenSeparator = Utility.indexOfByte(data, (byte) '\0');
             var contentLen = Integer.parseInt(new String(data, fmtSeparator + 1, contentLenSeparator - fmtSeparator - 1));
             var content = Arrays.copyOfRange(data, contentLenSeparator + 1, data.length);
 
             if (contentLen != content.length) {
-                printLog("Git content length mismatch: " + contentLen + " != " + content.length, MsgLevel.ERROR);
+                Utility.printLog("Git content length mismatch: " + contentLen + " != " + content.length, Utility.MsgLevel.ERROR);
                 return null;
             }
 
@@ -107,7 +65,7 @@ public class Utility {
             };
 
         } catch (FileNotFoundException e) {
-            printLog("Cannot find file in git repo: " + objPath, MsgLevel.ERROR);
+            Utility.printLog("Cannot find file in git repo: " + objPath, Utility.MsgLevel.ERROR);
             e.printStackTrace();
             return null;
         } catch (IOException | DataFormatException e) {
@@ -143,7 +101,7 @@ public class Utility {
                     outputStream.write(buffer, 0, count);
                 }
             } catch (IOException e) {
-                printLog("Error when trying to write to file: " + writePath, MsgLevel.ERROR);
+                Utility.printLog("Error when trying to write to file: " + writePath, Utility.MsgLevel.ERROR);
                 e.printStackTrace();
             }
         }
@@ -154,8 +112,8 @@ public class Utility {
     // Parse key-value file format used by commit and tag
     public static void deserializeGitKeyValue(byte[] rawContent, TreeMap<String, String> map, int startPos) {
         // Tag and commit share the same file format
-        var space = indexOfByte(rawContent, (byte)' ', startPos);
-        var newLine = indexOfByte(rawContent, (byte)'\n', startPos);
+        var space = Utility.indexOfByte(rawContent, (byte)' ', startPos);
+        var newLine = Utility.indexOfByte(rawContent, (byte)'\n', startPos);
 
         // Base case
         if (space == -1 || space > newLine) {
@@ -200,13 +158,13 @@ public class Utility {
                         new FileOutputStream(objPath.toString()), StandardCharsets.UTF_8))) {
                     writer.write(obj.serialize());
                 } catch (IOException e) {
-                    printLog("Error when trying to write to: " + objPath, MsgLevel.ERROR);
+                    Utility.printLog("Error when trying to write to: " + objPath, Utility.MsgLevel.ERROR);
                     e.printStackTrace();
                     return;
                 }
             }
             else {
-                printLog("Format not supported for: " + leaf.fmt, MsgLevel.WARNING);
+                Utility.printLog("Format not supported for: " + leaf.fmt, Utility.MsgLevel.WARNING);
             }
         }
     }
@@ -223,7 +181,7 @@ public class Utility {
             return content;
 
         } catch (IOException e) {
-            printLog("Cannot read file: " + filePath, MsgLevel.ERROR);
+            Utility.printLog("Cannot read file: " + filePath, Utility.MsgLevel.ERROR);
             e.printStackTrace();
             return null;
         }
@@ -293,7 +251,7 @@ public class Utility {
     public static String fuzzyNameMatch(GitRepository repo, String candidate) {
         var candidates = hashNameResolve(repo, candidate);
         if (candidates.size() > 1) {
-            printLog("Has more than one candidates, ambiguous hash: ", MsgLevel.ERROR);
+            Utility.printLog("Has more than one candidates, ambiguous hash: ", Utility.MsgLevel.ERROR);
             for (var item : candidates) {
                 System.out.println(item);
             }
@@ -312,4 +270,6 @@ public class Utility {
         // No match
         return null;
     }
+
+    // Utility function
 }

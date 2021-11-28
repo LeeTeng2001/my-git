@@ -7,7 +7,10 @@ import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-import static utility.Utility.*;
+import static helper.Function.fuzzyNameMatch;
+import static helper.Function.readGitObject;
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
 @Command(name = "log", mixinStandardHelpOptions = true, description = "Display history from a given commit.")
 public class GitLogCli implements Callable<Integer> {

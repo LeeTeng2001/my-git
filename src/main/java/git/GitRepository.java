@@ -8,8 +8,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
-import static utility.Utility.MsgLevel;
-import static utility.Utility.printLog;
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
 public class GitRepository {
     Path workTree;

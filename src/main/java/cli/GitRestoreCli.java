@@ -9,10 +9,12 @@ import picocli.CommandLine.Command;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
-import static utility.Utility.*;
+import static helper.Function.*;
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
-@Command(name = "reconstruct", mixinStandardHelpOptions = true, description = "Reconstruct a commit inside of a directory.")
-public class GitReconstructCli implements Callable<Integer> {
+@Command(name = "restore", mixinStandardHelpOptions = true, description = "Restore a commit inside of a directory.")
+public class GitRestoreCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", description = "Commit or tree to checkout")
     String name;
 

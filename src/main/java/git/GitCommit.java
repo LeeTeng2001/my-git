@@ -1,8 +1,12 @@
 package git;
 
+import helper.Function;
+
 import java.util.TreeMap;
 
-import static utility.Utility.*;
+import static helper.Function.*;
+import static helper.Utility.RESET;
+import static helper.Utility.YELLOW_BOLD;
 
 public class GitCommit extends GitObject {
     public TreeMap<String, String> map;

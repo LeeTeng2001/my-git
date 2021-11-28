@@ -1,19 +1,19 @@
 package cli;
 
-import git.GitCommit;
 import git.GitRepository;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
-import static utility.Utility.*;
+import static helper.Function.fuzzyNameMatch;
+import static helper.Function.getAllRefs;
+import static helper.Utility.MsgLevel;
+import static helper.Utility.printLog;
 
 @Command(name = "tag", mixinStandardHelpOptions = true,
         description = "Show tags or create a new tag for an object, usually pointing to commit")
