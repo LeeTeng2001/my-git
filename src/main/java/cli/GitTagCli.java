@@ -37,16 +37,16 @@ public class GitTagCli implements Callable<Integer> {
             }
         }
         else {  // Create tag
-            printLog("Tagging: " + tagName + " to " + hash, MsgLevel.INFO);
             var absHash = fuzzyNameMatch(repo, hash);
             if (absHash == null) {
                 printLog("Name doesn't have a match: " + hash, MsgLevel.ERROR);
                 return 1;
             }
+            printLog("Tagging: " + tagName + " to " + absHash, MsgLevel.INFO);
             var tagFile = repo.getRepoFilePath(Path.of("refs", "tags", tagName), false);
 
             try {
-                var writer = new PrintWriter("the-file-name.txt", StandardCharsets.UTF_8);
+                var writer = new PrintWriter(tagFile.toString(), StandardCharsets.UTF_8);
                 writer.println(absHash);
                 writer.close();
             } catch (IOException e) {
@@ -54,6 +54,8 @@ public class GitTagCli implements Callable<Integer> {
                 e.printStackTrace();
                 return 1;
             }
+
+            printLog("Successfully tagged: " + tagName, MsgLevel.SUCCESS);
         }
         return 0;
     }
