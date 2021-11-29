@@ -23,7 +23,7 @@ public class GitLogCli implements Callable<Integer> {
         var repo = GitRepository.findGitRepo();
         var absHash = fuzzyNameMatch(repo, name);
         if (absHash == null) {
-            printLog("Name doesn't have a match: " + name, MsgLevel.ERROR);
+            printLog("Name doesn't have a match or no history: " + name, MsgLevel.ERROR);
             return 1;
         }
         printLog("Showing history from: " + absHash, MsgLevel.INFO);

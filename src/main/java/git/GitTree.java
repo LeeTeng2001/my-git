@@ -157,7 +157,7 @@ public class GitTree extends GitObject {
         }
 
     // Currently, all object has the same non-executable mode
-    private static Leaf blobPathToLeaf(GitRepository repo, Path objPath) {
+    private static Leaf blobPathToLeafAndCommit(GitRepository repo, Path objPath, boolean commitMode, boolean commit) {
         byte[] content;
         try {
             content = Files.readAllBytes(objPath);
@@ -167,30 +167,57 @@ public class GitTree extends GitObject {
             return null;
         }
         var blob = new GitBlob(repo, content);
-        var sha = writeGitObject(blob, false);
+        String sha = writeGitObject(blob, false);
+
+        if (commitMode) {  // only check for commit in commit mode
+            // Check if the file is new
+            var gitFilePath = repo.getRepoPath(Path.of("objects", sha.substring(0, 2), sha.substring(2)));
+            if (!gitFilePath.toFile().exists()) {
+                if (commit) {
+                    writeGitObject(new GitBlob(repo, content), true);
+                    printLog("Committing new file: " + objPath, Utility.MsgLevel.SUCCESS);
+                }
+                else printLog("Committing new file: " + objPath, Utility.MsgLevel.INFO);
+            }
+        }
+
         var mode = objPath.toFile().canExecute() ? "100755" : "100644";
 
         var leaf = new Leaf(mode, objPath.toFile().getName(), sha, "blob");
         return leaf;
     }
 
-    public static Leaf treePathToLeaf(GitRepository repo, Path objPath) {
+    public static Leaf commitFromPath(GitRepository repo, Path objPath, boolean commit) {
         var children = objPath.toFile().listFiles();
         if (children == null) return null;  // cannot have empty directory
         var leaves = new ArrayList<Leaf>();
+
         for (File child : children) {
             if (repo.ignore.contains(child.getName())) continue;  // skip ignored file
+
             if (child.isDirectory()) {
-                var childTreeLeaf = treePathToLeaf(repo, child.toPath());
+                var childTreeLeaf = commitFromPath(repo, child.toPath(), commit);
                 if (childTreeLeaf == null) continue;  // skip empty dir
                 leaves.add(childTreeLeaf);
             }
-            else leaves.add(blobPathToLeaf(repo, child.toPath()));
+            else leaves.add(blobPathToLeafAndCommit(repo, child.toPath(), true, commit) );
         }
 
         // Leaves need to be sorted!
         leaves.sort(Comparator.comparing(Leaf::getPath));
+
+        // Commit if needed
         var sha = writeGitObject(new GitTree(repo, leaves), false);
+
+        // Check if the directory is new
+        var gitFilePath = repo.getRepoPath(Path.of("objects", sha.substring(0, 2), sha.substring(2)));
+        if (!gitFilePath.toFile().exists()) {
+            if (commit) {
+                writeGitObject(new GitTree(repo, leaves), true);
+                printLog("Committing new directory: " + objPath, Utility.MsgLevel.SUCCESS);
+            }
+            else printLog("Committing new directory: " + objPath, Utility.MsgLevel.INFO);
+        }
 
         // REMEMBER there's no padding 0 in front of the code!!!!
         return new Leaf("40000", objPath.toFile().getName(), sha, "tree");
@@ -211,7 +238,7 @@ public class GitTree extends GitObject {
                     leaves.addAll(nextLevel);  // add all children new tree
             }
             else {
-                var blobLeaf = blobPathToLeaf(repo, child.toPath());
+                var blobLeaf = blobPathToLeafAndCommit(repo, child.toPath(), false, false);
                 var gitFilePath = repo.getRepoPath(Path.of("objects", blobLeaf.sha.substring(0, 2), blobLeaf.sha.substring(2)));
                 if (!gitFilePath.toFile().exists()) {
                     blobLeaf.path = child.toString();

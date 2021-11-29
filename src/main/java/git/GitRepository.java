@@ -32,9 +32,7 @@ public class GitRepository {
 
         try {
             config = new Wini(configFile);
-        } catch (IOException e) {
-            printLog("Error when trying to read config: " + configFile, MsgLevel.ERROR);
-        }
+        } catch (IOException ignored) {}
 
         ignore = new HashSet<>();
         ignore.add(".git");
@@ -47,6 +45,12 @@ public class GitRepository {
             scanner.close();
         }
         catch(IOException ignored) {};
+    }
+
+    public Path getRelativeWorkingDir() {
+        var absCurPath = Path.of("").toAbsolutePath();
+        if (absCurPath.equals(workTree)) return Path.of(".");
+        return absCurPath.relativize(workTree);
     }
 
     public String getConfig(String nameSpace, String key) {
