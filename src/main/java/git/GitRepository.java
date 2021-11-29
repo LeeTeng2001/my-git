@@ -1,5 +1,7 @@
 package git;
 
+import org.ini4j.Wini;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -14,10 +16,25 @@ import static helper.Utility.printLog;
 public class GitRepository {
     Path workTree;
     Path gitDir;
+    Wini config;
 
     public GitRepository(Path root) {
         workTree = root;
         gitDir = workTree.resolve(".git");
+
+        // Read config file
+        File configFile = gitDir.resolve("config").toFile();
+
+        try {
+            config = new Wini(configFile);
+        } catch (IOException e) {
+            printLog("Error when trying to read config: " + configFile, MsgLevel.ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    public String getConfig(String nameSpace, String key) {
+        return config.get(nameSpace, key);
     }
 
     // Return a relative path from git from absolute path, useful when you want only relative path output
@@ -33,7 +50,7 @@ public class GitRepository {
     // Same as getRepoPath but will mkdir parent folder if specified, need absolute path to avoid null pointer
     public Path getRepoFilePath(Path originalPath, boolean mkdir) {
         if (originalPath.getParent() == null)
-            return originalPath;  // root file
+            return getRepoPath(originalPath);  // root file
         var parentFolder = getRepoDirPath(originalPath.getParent(), mkdir);
 
         if (parentFolder == null) {
@@ -74,7 +91,7 @@ public class GitRepository {
     }
 
     // create git repository, return status code
-    public static int createGitRepo(String target) {
+    public static int createGitRepo(String target, String name, String email) {
         var createPath = new File(target);
 
         // make sure directory empty or not exist before proceeding
@@ -110,8 +127,16 @@ public class GitRepository {
             content = List.of("ref: refs/heads/main");
             Files.write(newRepo.getRepoFilePath(Path.of("HEAD"), true), content, StandardCharsets.UTF_8);
 
-            // .git/config,  we're not using this, so we hard coded the content
-            content = Arrays.asList("[core]", "\trepositoryformatversion = 0", "\tfilemode = false", "\tbare = false", "\tignorecase = true");
+            // .git/config, hard coded the content
+            content = Arrays.asList("[core]",
+                                    "\trepositoryformatversion = 0",
+                                    "\tfilemode = false",
+                                    "\tbare = false",
+                                    "\tignorecase = true",
+                                    "[user]",
+                                    "\tname = " + name,
+                                    "\temail = " + email
+            );
             Files.write(newRepo.getRepoFilePath(Path.of("config"), true), content, StandardCharsets.UTF_8);
 
             printLog("Successfully initialized git directory at: " + target, MsgLevel.SUCCESS);

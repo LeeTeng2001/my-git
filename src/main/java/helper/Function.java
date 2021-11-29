@@ -169,7 +169,7 @@ public class Function {
         }
     }
 
-    private static String resolveRef(Path filePath) {
+    private static String resolveRef(GitRepository repo, Path filePath) {
         // Reference file is always in ASCII / UTF-8 compatible, strip newline
         try {
             String content = Files.readString(filePath, StandardCharsets.UTF_8).replace("\n", "");
@@ -177,7 +177,7 @@ public class Function {
 
             // Check for indirect reference
             if (content.startsWith("ref: "))
-                return resolveRef(Path.of(content.substring(5)));
+                return resolveRef(repo, repo.getRepoFilePath(Path.of(content.substring(5)), false));
             return content;
 
         } catch (IOException e) {
@@ -187,16 +187,16 @@ public class Function {
         }
     }
 
-    private static void getAllRefs(Path dirPath, TreeMap<String, String> res) {
-        var children = dirPath.toFile().listFiles();
+    private static void getAllRefs(GitRepository repo, Path gitDirPath, TreeMap<String, String> res) {
+        var children = gitDirPath.toFile().listFiles();
         if (children == null) return;
 
         for (var file: children) {
             if (file.isDirectory()) {
-                getAllRefs(file.toPath(), res);
+                getAllRefs(repo, file.toPath(), res);
             }
             else {
-                res.put(file.toString(), resolveRef(file.toPath()));
+                res.put(file.toString(), resolveRef(repo, file.toPath()));
             }
         }
     }
@@ -205,7 +205,7 @@ public class Function {
         // Ordered map because we want to maintain insertion order
         var res = new TreeMap<String, String>();
         var refRoot = repo.getRepoDirPath(Path.of("refs"), false);
-        getAllRefs(refRoot, res);
+        getAllRefs(repo, refRoot, res);
         return res;
     }
 
@@ -218,7 +218,7 @@ public class Function {
             return candidates;
         }
         else if (name.equals("HEAD")) {
-            candidates.add(resolveRef(repo.getRepoFilePath(Path.of("HEAD"), false)));
+            candidates.add(resolveRef(repo, repo.getRepoFilePath(Path.of("HEAD"), false)));
             return candidates;
         }
         else if (name.length() == 40) {
@@ -263,13 +263,11 @@ public class Function {
         var allReferences = getAllRefs(repo);
         for (var key : allReferences.descendingKeySet()) {
             if (Path.of(key).toFile().getName().equals(candidate)) {
-                return resolveRef(Path.of(key));
+                return resolveRef(repo, Path.of(key));
             }
         }
 
         // No match
         return null;
     }
-
-    // Utility function
 }

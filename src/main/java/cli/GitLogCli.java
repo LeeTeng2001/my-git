@@ -14,8 +14,8 @@ import static helper.Utility.printLog;
 
 @Command(name = "log", mixinStandardHelpOptions = true, description = "Display history from a given commit.")
 public class GitLogCli implements Callable<Integer> {
-    @CommandLine.Parameters(index = "0",
-                            description = "The starting commit.")
+    @CommandLine.Parameters(index = "0", defaultValue = "HEAD",
+            description = "The starting commit.")
     String name;
 
     @Override

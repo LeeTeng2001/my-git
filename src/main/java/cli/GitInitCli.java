@@ -14,10 +14,14 @@ public class GitInitCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", defaultValue = ".",
                             description = "path to initialise git repository, must be empty or not exist, default is '.'")
     String path;
+    @CommandLine.Parameters(index = "1", description = "Author name")
+    String name;
+    @CommandLine.Parameters(index = "2", description = "Author email")
+    String email;
 
     @Override
     public Integer call() {
-        printLog("Initialising git repository at: " + path, MsgLevel.INFO);
-        return GitRepository.createGitRepo(path);
+        printLog("Initialising git repository at: " + path + " for " + name + ", " + email, MsgLevel.INFO);
+        return GitRepository.createGitRepo(path, name, email);
     }
 }
