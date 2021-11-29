@@ -14,10 +14,12 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import static helper.Utility.printLog;
+
 public class Function {
     public static GitObject readGitObject(GitRepository repo, String hash) {
         if (hash == null) {  // from name resolve function
-            Utility.printLog("Hash is null before reading git object ", Utility.MsgLevel.ERROR);
+            printLog("Hash is null before reading git object ", Utility.MsgLevel.ERROR);
             return null;
         }
 
@@ -25,7 +27,7 @@ public class Function {
         objPath = repo.getRepoFilePath(objPath, false);
 
         if (!objPath.toFile().exists() || objPath.toFile().isDirectory()) {
-            Utility.printLog("Git object file doesn't exist or is a directory: " + objPath, Utility.MsgLevel.ERROR);
+            printLog("Git object file doesn't exist or is a directory: " + objPath, Utility.MsgLevel.ERROR);
             return null;
         }
 
@@ -51,7 +53,7 @@ public class Function {
             var content = Arrays.copyOfRange(data, contentLenSeparator + 1, data.length);
 
             if (contentLen != content.length) {
-                Utility.printLog("Git content length mismatch: " + contentLen + " != " + content.length, Utility.MsgLevel.ERROR);
+                printLog("Git content length mismatch: " + contentLen + " != " + content.length, Utility.MsgLevel.ERROR);
                 return null;
             }
 
@@ -65,7 +67,7 @@ public class Function {
             };
 
         } catch (FileNotFoundException e) {
-            Utility.printLog("Cannot find file in git repo: " + objPath, Utility.MsgLevel.ERROR);
+            printLog("Cannot find file in git repo: " + objPath, Utility.MsgLevel.ERROR);
             e.printStackTrace();
             return null;
         } catch (IOException | DataFormatException e) {
@@ -77,9 +79,25 @@ public class Function {
 
     // We can choose to compute the hash without writing
     public static String writeGitObject(GitObject object, Boolean write) {
-        var data = object.serializeString();
-        // Add header and necessary format, don't need StringBuilder because compiler will optimize it anyway
-        var finalData = object.format + " " + data.length() + "\0" + data;
+        byte[] finalData;
+        try {
+            var rawData = object.serialize();
+            var stringLength = Integer.toString(rawData.length);
+
+            // Add header and necessary format
+            var data = new ByteArrayOutputStream();
+            data.write(object.format.getBytes(StandardCharsets.UTF_8));
+            data.write((byte) ' ');
+            data.write(stringLength.getBytes(StandardCharsets.UTF_8));
+            data.write((byte) '\0');
+            data.write(rawData);
+            finalData = data.toByteArray();
+        } catch (IOException e) {
+            printLog("Error when trying to create git object", Utility.MsgLevel.ERROR);
+            e.printStackTrace();
+            return null;
+        }
+
         // Hash value
         var sha1 = DigestUtils.sha1Hex(finalData);
 
@@ -88,9 +106,8 @@ public class Function {
             var writePath = object.repo.getRepoFilePath(Path.of("objects", sha1.substring(0, 2), sha1.substring(2)), true);
 
             // Compress using zlib, utf-8
-            var bytes = finalData.getBytes(StandardCharsets.UTF_8);
             var deflater = new Deflater();
-            deflater.setInput(bytes);
+            deflater.setInput(finalData);
 
             // Write to output
             try (FileOutputStream outputStream = new FileOutputStream(writePath.toFile()))  {
@@ -101,7 +118,7 @@ public class Function {
                     outputStream.write(buffer, 0, count);
                 }
             } catch (IOException e) {
-                Utility.printLog("Error when trying to write to file: " + writePath, Utility.MsgLevel.ERROR);
+                printLog("Error when trying to write to file: " + writePath, Utility.MsgLevel.ERROR);
                 e.printStackTrace();
             }
         }
@@ -154,17 +171,17 @@ public class Function {
                 reconstructTree(repo, (GitTree) obj, objPath);
             }
             else if (leaf.fmt.equals("blob")) {
-                try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                        new FileOutputStream(objPath.toString()), StandardCharsets.UTF_8))) {
-                    writer.write(obj.serializeString());
+                try {
+                    // Writing every byte with this convenient function
+                    Files.write(objPath, obj.serialize());
                 } catch (IOException e) {
-                    Utility.printLog("Error when trying to write to: " + objPath, Utility.MsgLevel.ERROR);
+                    printLog("Error when trying to write to: " + objPath, Utility.MsgLevel.ERROR);
                     e.printStackTrace();
                     return;
                 }
             }
             else {
-                Utility.printLog("Format not supported for: " + leaf.fmt, Utility.MsgLevel.WARNING);
+                printLog("Format not supported for: " + leaf.fmt, Utility.MsgLevel.WARNING);
             }
         }
     }
@@ -181,7 +198,7 @@ public class Function {
             return content;
 
         } catch (IOException e) {
-            Utility.printLog("Cannot read file: " + filePath, Utility.MsgLevel.ERROR);
+            printLog("Cannot read file: " + filePath, Utility.MsgLevel.ERROR);
             e.printStackTrace();
             return null;
         }
@@ -251,7 +268,7 @@ public class Function {
     public static String fuzzyNameMatch(GitRepository repo, String candidate) {
         var candidates = hashNameResolve(repo, candidate);
         if (candidates.size() > 1) {
-            Utility.printLog("Has more than one candidates, ambiguous hash: ", Utility.MsgLevel.ERROR);
+            printLog("Has more than one candidates, ambiguous hash: ", Utility.MsgLevel.ERROR);
             for (var item : candidates) {
                 System.out.println(item);
             }

@@ -3,12 +3,17 @@ package git;
 import helper.Utility;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static helper.Function.readGitObject;
+import static helper.Function.writeGitObject;
 import static helper.Utility.indexOfByte;
 import static helper.Utility.printLog;
 
@@ -16,8 +21,15 @@ public class GitTree extends GitObject {
     public ArrayList<Leaf> leaves;
 
     public GitTree(GitRepository repo, byte[] data) {
+        this.repo = repo;
         this.format = "tree";
         deserialize(data);
+    }
+
+    public GitTree(GitRepository repo, ArrayList<Leaf> leaves) {
+        this.repo = repo;
+        this.format = "tree";
+        this.leaves = leaves;
     }
 
     @Override
@@ -46,6 +58,15 @@ public class GitTree extends GitObject {
             this.path = path;
             this.sha = sha;
             this.fmt = fmt;
+        }
+
+        public String getFmtOutput() {
+            return String.format("%6s", mode).replace(' ', '0') + " "  + fmt + " " + sha + "\t" + path;
+        }
+
+        // For sorting
+        public String getPath() {
+            return path;
         }
     }
 
@@ -125,7 +146,7 @@ public class GitTree extends GitObject {
                         if (((1 << 3) & curVal) != 0) curByte |= 1 << 3;
                         res.write(curByte);
                     }
-                    res.write((byte) '\n');
+                    // NO NEWLINE AT THE END!
                 }
             } catch (IOException e) {
                 printLog("Error when trying to write string to byte", Utility.MsgLevel.ERROR);
@@ -134,4 +155,43 @@ public class GitTree extends GitObject {
 
             return res.toByteArray();
         }
+
+    // Currently, all object has the same non-executable mode
+    private static Leaf blobPathToLeaf(GitRepository repo, Path objPath) {
+        byte[] content;
+        try {
+            content = Files.readAllBytes(objPath);
+        } catch (IOException e) {
+            printLog("Error when trying to read object data", Utility.MsgLevel.ERROR);
+            e.printStackTrace();
+            return null;
+        }
+        var blob = new GitBlob(repo, content);
+        var sha = writeGitObject(blob, false);
+        var mode = objPath.toFile().canExecute() ? "100755" : "100644";
+
+        var leaf = new Leaf(mode, objPath.toFile().getName(), sha, "blob");
+        return leaf;
+    }
+
+    public static Leaf treePathToLeaf(GitRepository repo, Path objPath) {
+        var children = objPath.toFile().listFiles();
+        if (children == null) return null;  // cannot have empty directory
+        var leaves = new ArrayList<Leaf>();
+        for (File child : children) {
+            if (child.isDirectory()) {
+                var childTreeLeaf = treePathToLeaf(repo, child.toPath());
+                if (childTreeLeaf == null) continue;  // skip empty dir
+                leaves.add(childTreeLeaf);
+            }
+            else leaves.add(blobPathToLeaf(repo, child.toPath()));
+        }
+
+        // Leaves need to be sorted!
+        leaves.sort(Comparator.comparing(Leaf::getPath));
+        var sha = writeGitObject(new GitTree(repo, leaves), false);
+
+        // REMEMBER there's no padding 0 in front of the code!!!!
+        return new Leaf("40000", objPath.toFile().getName(), sha, "tree");
+    }
 }

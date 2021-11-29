@@ -40,8 +40,7 @@ public class GitLsTreeCli implements Callable<Integer> {
 
         var treeObj = (GitTree) obj;
         for (var leaf: treeObj.leaves) {
-            System.out.print(String.format("%6s", leaf.mode).replace(' ', '0'));
-            System.out.printf(" %s %s\t%s\n", leaf.fmt, leaf.sha, leaf.path);
+            System.out.println(leaf.getFmtOutput());
         }
 
         return 0;
