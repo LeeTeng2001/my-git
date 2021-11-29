@@ -8,9 +8,7 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
 import static git.GitTree.getNewUncommittedLeaves;
-import static git.GitTree.treePathToLeaf;
-import static helper.Utility.MsgLevel;
-import static helper.Utility.printLog;
+import static helper.Utility.*;
 
 @Command(name = "status", mixinStandardHelpOptions = true, description = "Show changes")
 public class GitStatusCli implements Callable<Integer> {
@@ -23,9 +21,10 @@ public class GitStatusCli implements Callable<Integer> {
         var repo = GitRepository.findGitRepo();
         var leaves = getNewUncommittedLeaves(repo, Path.of(dirPath));
         if (leaves == null) return 1;
-        printLog("Modified files: ", MsgLevel.INFO);
+
+        printLog("Modified files: ", MsgLevel.SUCCESS);
         for (var leaf: leaves) {
-            System.out.println(leaf.getFmtOutput());
+            System.out.println(RED_BOLD + "\tmodified: " + leaf.path + RESET);
         }
         return 0;
     }

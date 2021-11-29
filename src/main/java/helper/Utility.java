@@ -14,6 +14,8 @@ public class Utility {
     static final String GREEN = "\033[0;32m";
     static final String YELLOW = "\033[0;33m";
     static final String BLUE = "\033[0;34m";
+
+    public static final String RED_BOLD = "\033[1;31m";
     public static final String YELLOW_BOLD = "\033[1;33m";
 
     public static void printLog(String msg, MsgLevel level) {
