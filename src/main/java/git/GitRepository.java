@@ -3,12 +3,15 @@ package git;
 import org.ini4j.Wini;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 
 import static helper.Utility.MsgLevel;
 import static helper.Utility.printLog;
@@ -17,6 +20,7 @@ public class GitRepository {
     Path workTree;
     Path gitDir;
     Wini config;
+    HashSet<String> ignore;
 
     public GitRepository(Path root) {
         workTree = root;
@@ -24,13 +28,25 @@ public class GitRepository {
 
         // Read config file
         File configFile = gitDir.resolve("config").toFile();
+        File ignoreFile = workTree.resolve(".gitignore").toFile();
 
         try {
             config = new Wini(configFile);
         } catch (IOException e) {
             printLog("Error when trying to read config: " + configFile, MsgLevel.ERROR);
-            e.printStackTrace();
         }
+
+        ignore = new HashSet<>();
+        ignore.add(".git");
+        try {
+            // Add ignore file if it exists
+            var fis = new FileInputStream(ignoreFile);
+            var scanner = new Scanner(fis);
+            while (scanner.hasNextLine())
+                ignore.add(scanner.nextLine());
+            scanner.close();
+        }
+        catch(IOException ignored) {};
     }
 
     public String getConfig(String nameSpace, String key) {

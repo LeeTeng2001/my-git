@@ -179,6 +179,7 @@ public class GitTree extends GitObject {
         if (children == null) return null;  // cannot have empty directory
         var leaves = new ArrayList<Leaf>();
         for (File child : children) {
+            if (repo.ignore.contains(child.getName())) continue;  // skip ignored file
             if (child.isDirectory()) {
                 var childTreeLeaf = treePathToLeaf(repo, child.toPath());
                 if (childTreeLeaf == null) continue;  // skip empty dir
@@ -193,5 +194,32 @@ public class GitTree extends GitObject {
 
         // REMEMBER there's no padding 0 in front of the code!!!!
         return new Leaf("40000", objPath.toFile().getName(), sha, "tree");
+    }
+
+    // Special blob leaves with relative path from root
+    public static ArrayList<Leaf> getNewUncommittedLeaves(GitRepository repo, Path objPath) {
+        var children = objPath.toFile().listFiles();
+        if (children == null) return null;  // cannot have empty directory
+        var leaves = new ArrayList<Leaf>();
+
+        for (File child : children) {
+            if (repo.ignore.contains(child.getName())) continue;  // skip ignored file
+
+            if (child.isDirectory()) {
+                var nextLevel = getNewUncommittedLeaves(repo, child.toPath());
+                if (nextLevel != null)
+                    leaves.addAll(nextLevel);  // add all children new tree
+            }
+            else {
+                var blobLeaf = blobPathToLeaf(repo, child.toPath());
+                var gitFilePath = repo.getRepoPath(Path.of("objects", blobLeaf.sha.substring(0, 2), blobLeaf.sha.substring(2)));
+                if (!gitFilePath.toFile().exists()) {
+                    blobLeaf.path = child.toString();
+                    leaves.add(blobLeaf);
+                }
+            }
+        }
+
+        return leaves;
     }
 }

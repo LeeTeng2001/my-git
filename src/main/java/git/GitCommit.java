@@ -3,8 +3,10 @@ package git;
 import java.nio.charset.StandardCharsets;
 import java.util.TreeMap;
 
-import static helper.Function.*;
-import static helper.Utility.*;
+import static helper.Function.deserializeGitKeyValue;
+import static helper.Function.serializeGitKeyValue;
+import static helper.Utility.RESET;
+import static helper.Utility.YELLOW_BOLD;
 
 public class GitCommit extends GitObject {
     public TreeMap<String, String> map;
