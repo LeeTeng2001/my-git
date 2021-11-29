@@ -1,7 +1,7 @@
 package git;
 
 public class GitBlob extends GitObject {
-    String data;
+    byte[] data;
 
     public GitBlob(GitRepository repo, byte[] data) {
         this.format = "blob";
@@ -10,12 +10,17 @@ public class GitBlob extends GitObject {
     }
 
     @Override
-    public String serialize() {
+    public byte[] serialize() {
         return data;
     }
 
     @Override
+    public String serializeString() {
+        return new String(data);
+    }
+
+    @Override
     public void deserialize(byte[] data) {
-        this.data = new String(data);
+        this.data = data;
     }
 }

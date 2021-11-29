@@ -77,7 +77,7 @@ public class Function {
 
     // We can choose to compute the hash without writing
     public static String writeGitObject(GitObject object, Boolean write) {
-        var data = object.serialize();
+        var data = object.serializeString();
         // Add header and necessary format, don't need StringBuilder because compiler will optimize it anyway
         var finalData = object.format + " " + data.length() + "\0" + data;
         // Hash value
@@ -156,7 +156,7 @@ public class Function {
             else if (leaf.fmt.equals("blob")) {
                 try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                         new FileOutputStream(objPath.toString()), StandardCharsets.UTF_8))) {
-                    writer.write(obj.serialize());
+                    writer.write(obj.serializeString());
                 } catch (IOException e) {
                     Utility.printLog("Error when trying to write to: " + objPath, Utility.MsgLevel.ERROR);
                     e.printStackTrace();
@@ -270,4 +270,5 @@ public class Function {
         // No match
         return null;
     }
+
 }

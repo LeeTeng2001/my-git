@@ -28,7 +28,7 @@ public class GitCatFileCli implements Callable<Integer> {
 
         var obj = readGitObject(repo, absHash);
         printLog("Content of obj " + absHash + " is: ", MsgLevel.INFO);
-        System.out.println(obj.serialize());
+        System.out.println(obj.serializeString());
         return 0;
     }
 }

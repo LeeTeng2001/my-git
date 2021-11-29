@@ -1,10 +1,16 @@
 package git;
 
+import helper.Utility;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static helper.Function.readGitObject;
 import static helper.Utility.indexOfByte;
+import static helper.Utility.printLog;
 
 public class GitTree extends GitObject {
     public ArrayList<Leaf> leaves;
@@ -15,8 +21,13 @@ public class GitTree extends GitObject {
     }
 
     @Override
-    public String serialize() {
+    public byte[] serialize() {
         return serializeTree(leaves);
+    }
+
+    @Override
+    public String serializeString() {
+        return new String(serializeTree(leaves));
     }
 
     @Override
@@ -90,32 +101,37 @@ public class GitTree extends GitObject {
         return leaves;
     }
 
-    private static String serializeTree(ArrayList<Leaf> leaves) {
-            var res = new StringBuilder();
+    private static byte[] serializeTree(ArrayList<Leaf> leaves) {
+            var res = new ByteArrayOutputStream();
 
-            for (var leaf : leaves) {
-                res.append(leaf.mode);
-                res.append(' ');
-                res.append(leaf.path);
-                res.append('\0');
-                for (int i = 0; i < leaf.sha.length(); i += 2) {
-                    byte curByte = 0;
-                    int curVal = Character.digit(leaf.sha.charAt(i), 16);
-                    if ((1 & curVal) != 0) curByte |= 1 << 4;
-                    if (((1 << 1) & curVal) != 0) curByte |= 1 << 5;
-                    if (((1 << 2) & curVal) != 0) curByte |= 1 << 6;
-                    if (((1 << 3) & curVal) != 0) curByte |= 1 << 7;
+            try {
+                for (var leaf : leaves) {
+                    res.write(leaf.mode.getBytes(StandardCharsets.UTF_8));
+                    res.write((byte) ' ');
+                    res.write(leaf.path.getBytes(StandardCharsets.UTF_8));
+                    res.write((byte) '\0');
+                    for (int i = 0; i < leaf.sha.length(); i += 2) {
+                        byte curByte = 0;
+                        int curVal = Character.digit(leaf.sha.charAt(i), 16);
+                        if ((1 & curVal) != 0) curByte |= 1 << 4;
+                        if (((1 << 1) & curVal) != 0) curByte |= 1 << 5;
+                        if (((1 << 2) & curVal) != 0) curByte |= 1 << 6;
+                        if (((1 << 3) & curVal) != 0) curByte |= 1 << 7;
 
-                    curVal = Character.digit(leaf.sha.charAt(i + 1), 16);
-                    if ((1 & curVal) != 0) curByte |= 1;
-                    if (((1 << 1) & curVal) != 0) curByte |= 1 << 1;
-                    if (((1 << 2) & curVal) != 0) curByte |= 1 << 2;
-                    if (((1 << 3) & curVal) != 0) curByte |= 1 << 3;
-                    res.append(curByte);
+                        curVal = Character.digit(leaf.sha.charAt(i + 1), 16);
+                        if ((1 & curVal) != 0) curByte |= 1;
+                        if (((1 << 1) & curVal) != 0) curByte |= 1 << 1;
+                        if (((1 << 2) & curVal) != 0) curByte |= 1 << 2;
+                        if (((1 << 3) & curVal) != 0) curByte |= 1 << 3;
+                        res.write(curByte);
+                    }
+                    res.write((byte) '\n');
                 }
-                res.append('\n');
+            } catch (IOException e) {
+                printLog("Error when trying to write string to byte", Utility.MsgLevel.ERROR);
+                e.printStackTrace();
             }
 
-            return res.toString();
+            return res.toByteArray();
         }
 }

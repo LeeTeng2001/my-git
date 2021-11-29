@@ -11,6 +11,7 @@ import static helper.Utility.printLog;
 public class GitStatusCli implements Callable<Integer> {
     @Override
     public Integer call() {
+        // Very simple reimplementation of status, only check new file
         printLog("New files: ", MsgLevel.INFO);
         return 0;
     }

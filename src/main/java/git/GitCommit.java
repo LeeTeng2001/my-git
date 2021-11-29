@@ -1,12 +1,10 @@
 package git;
 
-import helper.Function;
-
+import java.nio.charset.StandardCharsets;
 import java.util.TreeMap;
 
 import static helper.Function.*;
-import static helper.Utility.RESET;
-import static helper.Utility.YELLOW_BOLD;
+import static helper.Utility.*;
 
 public class GitCommit extends GitObject {
     public TreeMap<String, String> map;
@@ -19,7 +17,12 @@ public class GitCommit extends GitObject {
     }
 
     @Override
-    public String serialize() {
+    public byte[] serialize() {
+        return serializeGitKeyValue(map).getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public String serializeString() {
         return serializeGitKeyValue(map);
     }
 
