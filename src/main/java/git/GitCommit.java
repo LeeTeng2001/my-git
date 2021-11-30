@@ -53,8 +53,6 @@ public class GitCommit extends GitObject {
 
         // Find parent, hard code main path since we're not allow to change it
         var lastCommitFile = repo.getRepoFilePath(Path.of("refs", "heads", "main"), false);
-        System.out.println(lastCommitFile);
-        System.out.println(lastCommitFile.toFile().exists());
         if (lastCommitFile.toFile().exists()) {
             try {
                 var lastCommit = Files.readString(lastCommitFile).replaceAll("\n", "");

@@ -1,12 +1,9 @@
 package cli;
 
-import git.GitCommit;
 import git.GitRepository;
-import helper.Function;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
 import static helper.Utility.MsgLevel;

@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -138,7 +139,13 @@ public class Function {
             return;
         }
 
+        // Check valid key
         var key = new String(rawContent, startPos, space - startPos);
+        if (!key.equals("parent") && !key.equals("tree") && !key.equals("author") && !key.equals("committer")) {
+            map.put("", new String(rawContent, startPos, rawContent.length - startPos));
+            return;
+        }
+
         var value = new String(rawContent, space + 1, newLine - space - 1);
         map.put(key, value);
 
