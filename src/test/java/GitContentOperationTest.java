@@ -65,6 +65,41 @@ public class GitContentOperationTest {
 
     @Test
     void testCommit() {
+        int exitCode = cmd.execute("commit", "Hello message", "-y");
+        assertEquals(0, exitCode);
+        exitCode = cmd.execute("commit", "Hello message", "-y");
+        assertEquals(0, exitCode);
+        exitCode = cmd.execute("commit", "Hello message");
+        assertEquals(0, exitCode);
+        exitCode = cmd.execute("log");
+        assertEquals(0, exitCode);
+    }
 
+    @Test
+    void testUpdateCommit() {
+        int exitCode = cmd.execute("commit", "First Commit", "-y");
+        assertEquals(0, exitCode);
+        exitCode = cmd.execute("status");
+        assertEquals(0, exitCode);
+        exitCode = cmd.execute("commit", "Second Commit", "-y");
+        assertEquals(0, exitCode);
+
+        // modify code
+        try {
+            Files.writeString(Path.of("hello.txt"), "new contentkajhsdfkjahskdf");
+            Files.writeString(Path.of("dir/testsomeTextxx.txt"), "new kjdh");
+            Files.writeString(Files.createFile(Path.of("dir/newfile.tdadfsxt")), "new kjd akjshdf adf asdf \nh");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        exitCode = cmd.execute("status");
+        assertEquals(0, exitCode);
+
+        exitCode = cmd.execute("commit", "Try Commit");
+        assertEquals(0, exitCode);
+        exitCode = cmd.execute("commit", "Actually run", "-y");
+        assertEquals(0, exitCode);
+        exitCode = cmd.execute("log");
+        assertEquals(0, exitCode);
     }
 }

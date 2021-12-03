@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -72,5 +73,14 @@ class GitMethodTest {
             assertNotEquals(compareData, null);
             assertArrayEquals(compareData, data);
         }
+    }
+
+    @Test
+    void testEmptyCommitAndStatus() {
+        // Cannot commit & check status in empty directory
+        int exitCode = cmd.execute("status");
+        assertEquals(0, exitCode);
+        exitCode = cmd.execute("commit");
+        assertEquals(0, exitCode);
     }
 }

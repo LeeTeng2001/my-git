@@ -203,6 +203,9 @@ public class GitTree extends GitObject {
             else leaves.add(blobPathToLeafAndCommit(repo, child.toPath(), true, commit) );
         }
 
+        // Base case, empty valid leaves
+        if (leaves.isEmpty()) return null;
+
         // Leaves need to be sorted!
         leaves.sort(Comparator.comparing(Leaf::getPath));
 
@@ -247,6 +250,6 @@ public class GitTree extends GitObject {
             }
         }
 
-        return leaves;
+        return leaves.isEmpty() ? null : leaves;
     }
 }

@@ -22,11 +22,14 @@ public class GitStatusCli implements Callable<Integer> {
         if (repo == null) return 1;
 
         var leaves = getNewUncommittedLeaves(repo, Path.of(dirPath));
-        if (leaves == null) return 1;
+        if (leaves == null) {
+            printLog("Working directory is clean", MsgLevel.INFO);
+            return 0;
+        }
 
-        printLog("Modified files: ", MsgLevel.SUCCESS);
+        printLog("Modified files: ", MsgLevel.INFO);
         for (var leaf: leaves) {
-            System.out.println(RED_BOLD + "\tmodified: " + leaf.path + RESET);
+            System.out.println(RED_BOLD + "->\tmodified: " + leaf.path + RESET);
         }
         return 0;
     }

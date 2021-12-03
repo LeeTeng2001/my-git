@@ -57,6 +57,14 @@ public class GitCommit extends GitObject {
             try {
                 var lastCommit = Files.readString(lastCommitFile).replaceAll("\n", "");
                 newCommit.map.put("parent", lastCommit);
+
+                // Check if previous commit has the same tree, means we have nothing to update
+                var lastCommitParent = (GitCommit) readGitObject(repo, newCommit.map.get("parent"));
+                if (lastCommitParent.map.get("tree").equals(newTreeHash)) {
+                    printLog("Nothing to commit to", MsgLevel.INFO);
+                    return null;
+                }
+
             } catch (IOException e) {
                 printLog("Error when trying to read commit file", MsgLevel.ERROR);
                 e.printStackTrace();
