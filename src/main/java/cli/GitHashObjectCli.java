@@ -29,8 +29,10 @@ public class GitHashObjectCli implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            var content = Files.readAllBytes(Path.of(objPath));
             var curRepo = GitRepository.findGitRepo();
+            if (curRepo == null) return 1;
+
+            var content = Files.readAllBytes(Path.of(objPath));
             var gitObject = switch (format) {
                 case blob -> new GitBlob(curRepo, content);
                 case commit -> new GitCommit(curRepo, content);

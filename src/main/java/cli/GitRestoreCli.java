@@ -24,6 +24,8 @@ public class GitRestoreCli implements Callable<Integer> {
     @Override
     public Integer call() {
         var repo = GitRepository.findGitRepo();
+        if (repo == null) return 1;
+
         var absHash = fuzzyNameMatch(repo, name);
         if (absHash == null) {
             printLog("Name doesn't have a match: " + name, MsgLevel.ERROR);

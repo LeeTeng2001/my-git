@@ -28,6 +28,7 @@ public class GitTagCli implements Callable<Integer> {
     public Integer call() {
         // Tag has lightweight tag and tag object, we do not support creation of tag object, although we could
         var repo = GitRepository.findGitRepo();
+        if (repo == null) return 1;
 
         if (tagName.isEmpty()) {  // list tag if it's empty
             var allReferences = getAllRefs(repo);

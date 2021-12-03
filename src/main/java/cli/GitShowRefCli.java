@@ -15,6 +15,8 @@ public class GitShowRefCli implements Callable<Integer> {
     @Override
     public Integer call() {
         var repo = GitRepository.findGitRepo();
+        if (repo == null) return 1;
+
         var allReferences = getAllRefs(repo);
 
         printLog("Showing all references: ", MsgLevel.INFO);

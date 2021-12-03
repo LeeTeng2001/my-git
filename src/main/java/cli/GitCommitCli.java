@@ -22,8 +22,10 @@ public class GitCommitCli implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        var message = String.join(" ", messages);
         var repo = GitRepository.findGitRepo();
+        if (repo == null) return 1;
+
+        var message = String.join(" ", messages);
         var topLeaf = commitFromPath(repo, repo.getRelativeWorkingDir(), commit);
 
         // Create new commit file and point update head

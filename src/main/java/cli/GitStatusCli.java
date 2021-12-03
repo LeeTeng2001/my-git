@@ -19,6 +19,8 @@ public class GitStatusCli implements Callable<Integer> {
     public Integer call() {
         // Very simple reimplementation of status, only check new file
         var repo = GitRepository.findGitRepo();
+        if (repo == null) return 1;
+
         var leaves = getNewUncommittedLeaves(repo, Path.of(dirPath));
         if (leaves == null) return 1;
 

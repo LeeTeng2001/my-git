@@ -172,7 +172,7 @@ public class GitRepository {
     // Recursively find git repository work directory
     public static GitRepository findGitRepo(Path from) {
         if (from == null) {
-            printLog("Cannot find git repo for null!", MsgLevel.ERROR);
+            printLog("Parent git repo doesn't exist!", MsgLevel.ERROR);
             return null;
         }
 
