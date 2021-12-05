@@ -23,6 +23,7 @@ public class GitCommit extends GitObject {
         this.format = "commit";
         this.repo = repo;
         map = new TreeMap<>();
+        // Manually generate data
     }
 
     @Override

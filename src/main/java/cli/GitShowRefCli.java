@@ -11,7 +11,7 @@ import static helper.Utility.MsgLevel;
 import static helper.Utility.printLog;
 
 @Command(name = "show-ref", mixinStandardHelpOptions = true, description = "List all references")
-public class GitShowRefCli implements Callable<Integer> {
+public final class GitShowRefCli implements Callable<Integer> {
     @Override
     public Integer call() {
         var repo = GitRepository.findGitRepo();

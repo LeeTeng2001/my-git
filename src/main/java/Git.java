@@ -19,7 +19,7 @@ import static helper.Utility.printLog;
         GitStatusCli.class,
         GitCommitCli.class,
 })
-public class Git implements Callable<Integer> {
+public final class Git implements Callable<Integer> {
     @Override
     public Integer call() {
         printLog("Cannot call git without sub-command!", MsgLevel.ERROR);

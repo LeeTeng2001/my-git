@@ -16,7 +16,7 @@ import java.util.zip.Inflater;
 
 import static helper.Utility.printLog;
 
-public class Function {
+public final class Function {
     public static GitObject readGitObject(GitRepository repo, String hash) {
         if (hash == null) {  // from name resolve function
             printLog("Hash is null before reading git object ", Utility.MsgLevel.ERROR);

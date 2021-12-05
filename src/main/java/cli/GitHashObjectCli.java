@@ -14,7 +14,7 @@ import static helper.Utility.MsgLevel;
 import static helper.Utility.printLog;
 
 @Command(name = "hash-object", mixinStandardHelpOptions = true, description = "Compute object ID and optionally create blob file")
-public class GitHashObjectCli implements Callable<Integer> {
+public final class GitHashObjectCli implements Callable<Integer> {
     enum ObjType {blob, tree, commit, tag}
 
     @CommandLine.Option(names = {"-t", "type"}, defaultValue = "blob", description = "format of git object: [${COMPLETION-CANDIDATES}], default is blob")

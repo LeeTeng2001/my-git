@@ -1,6 +1,6 @@
 package git;
 
-public class GitBlob extends GitObject {
+public final class GitBlob extends GitObject {
     byte[] data;
 
     public GitBlob(GitRepository repo, byte[] data) {

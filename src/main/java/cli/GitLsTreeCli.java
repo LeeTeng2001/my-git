@@ -14,7 +14,7 @@ import static helper.Utility.MsgLevel;
 import static helper.Utility.printLog;
 
 @Command(name = "ls-tree", mixinStandardHelpOptions = true, description = "Pretty-print a tree object.")
-public class GitLsTreeCli implements Callable<Integer> {
+public final class GitLsTreeCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", description = "hash value of the tree object")
     String name;
 

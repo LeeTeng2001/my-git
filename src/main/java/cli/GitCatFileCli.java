@@ -13,7 +13,7 @@ import static helper.Utility.printLog;
 
 
 @Command(name = "cat-file", mixinStandardHelpOptions = true, description = "Print content of git object")
-public class GitCatFileCli implements Callable<Integer> {
+public final class GitCatFileCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", description = "hash value of the git object")
     String name;
 

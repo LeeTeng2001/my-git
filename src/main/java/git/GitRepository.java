@@ -16,7 +16,7 @@ import java.util.Scanner;
 import static helper.Utility.MsgLevel;
 import static helper.Utility.printLog;
 
-public class GitRepository {
+public final class GitRepository {
     Path workTree;
     Path gitDir;
     Wini config;

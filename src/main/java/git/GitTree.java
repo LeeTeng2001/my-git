@@ -17,7 +17,7 @@ import static helper.Function.writeGitObject;
 import static helper.Utility.indexOfByte;
 import static helper.Utility.printLog;
 
-public class GitTree extends GitObject {
+public final class GitTree extends GitObject {
     public ArrayList<Leaf> leaves;
 
     public GitTree(GitRepository repo, byte[] data) {
@@ -47,7 +47,7 @@ public class GitTree extends GitObject {
         leaves = deserializeTree(data);
     }
 
-    public static class Leaf {
+    public static final class Leaf {
         public String mode;
         public String path;
         public String sha;

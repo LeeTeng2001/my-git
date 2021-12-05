@@ -17,7 +17,7 @@ import static helper.Utility.printLog;
 
 @Command(name = "tag", mixinStandardHelpOptions = true,
         description = "Show tags or create a new tag for an object, usually pointing to commit")
-public class GitTagCli implements Callable<Integer> {
+public final class GitTagCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", defaultValue = "",  description = "The name for the tag.")
     String tagName;
 

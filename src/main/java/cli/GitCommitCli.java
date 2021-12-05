@@ -5,7 +5,6 @@ import git.GitRepository;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -14,7 +13,7 @@ import static helper.Utility.MsgLevel;
 import static helper.Utility.printLog;
 
 @Command(name = "commit", mixinStandardHelpOptions = true, description = "Save current state")
-public class GitCommitCli implements Callable<Integer> {
+public final class GitCommitCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0..", defaultValue = "No commit message", description = "Commit message")
     List<String> messages;
 
@@ -33,7 +32,7 @@ public class GitCommitCli implements Callable<Integer> {
             return 0;
         }
 
-        // Create new commit file and point update head
+        // Create new commit file and update head pointer
         var commitHash = GitCommit.createCommit(repo, topLeaf.sha, message, commit);
         if (commitHash == null) return 0;
 

@@ -10,8 +10,8 @@ import java.util.concurrent.Callable;
 import static git.GitTree.getNewUncommittedLeaves;
 import static helper.Utility.*;
 
-@Command(name = "status", mixinStandardHelpOptions = true, description = "Show changes starting from directory")
-public class GitStatusCli implements Callable<Integer> {
+@Command(name = "status", mixinStandardHelpOptions = true, description = "Show changes starting from directory, ONLY show changed files, does not detect changes if content is the same")
+public final class GitStatusCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", defaultValue = ".", description = "Path to start from")
     String dirPath;
 

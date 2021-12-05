@@ -1,6 +1,6 @@
 package helper;
 
-public class Utility {
+public final class Utility {
     public enum MsgLevel {
         INFO,
         SUCCESS,

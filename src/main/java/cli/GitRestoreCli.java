@@ -14,7 +14,7 @@ import static helper.Utility.MsgLevel;
 import static helper.Utility.printLog;
 
 @Command(name = "restore", mixinStandardHelpOptions = true, description = "Restore a commit inside of a directory. Caveat, doesn't restore executable permission bit")
-public class GitRestoreCli implements Callable<Integer> {
+public final class GitRestoreCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", description = "Commit or tree to checkout")
     String name;
 

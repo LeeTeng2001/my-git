@@ -10,7 +10,7 @@ import static helper.Utility.MsgLevel;
 import static helper.Utility.printLog;
 
 @Command(name = "init", mixinStandardHelpOptions = true, description = "Initialise a git repository with author name and email")
-public class GitInitCli implements Callable<Integer> {
+public final class GitInitCli implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", defaultValue = ".",
                             description = "path to initialise git repository, must be empty or not exist, default is '.'")
     String path;

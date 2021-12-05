@@ -13,7 +13,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GitContentOperationTest {
+public class GitContentTest {
     private final static String testingDir = "/Users/lunafreya/Downloads/testing-dir";
 
     Git app;
@@ -31,7 +31,7 @@ public class GitContentOperationTest {
         assertEquals(testingDir, testDir.toString());
         cmd.execute("init");
 
-        // Make few files
+        // Make few files for testing
         try {
             Files.createDirectories(Path.of("dir/test"));
             var file1 = Files.createFile(Path.of("hello.txt"));
@@ -84,7 +84,7 @@ public class GitContentOperationTest {
         exitCode = cmd.execute("commit", "Second Commit", "-y");
         assertEquals(0, exitCode);
 
-        // modify code
+        // modify files
         try {
             Files.writeString(Path.of("hello.txt"), "new contentkajhsdfkjahskdf");
             Files.writeString(Path.of("dir/testsomeTextxx.txt"), "new kjdh");
@@ -102,4 +102,12 @@ public class GitContentOperationTest {
         exitCode = cmd.execute("log");
         assertEquals(0, exitCode);
     }
+
+//    @Test
+//    void testReadGitObjects() {
+//        int exitCode = cmd.execute("commit", "First Commit", "-y");
+//        assertEquals(0, exitCode);
+//
+//        // TODO: test reading
+//    }
 }
