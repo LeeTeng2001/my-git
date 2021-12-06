@@ -1,7 +1,8 @@
 <div id="top"></div>
 
-<!-- PROJECT LOGO -->
+<!-- PROJECT HEADER -->
 <br />
+
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
     <img src="doc/img/logo.png" alt="Logo" width="160" height="80">
@@ -12,39 +13,15 @@
 <p align="center">
     A version control system like Git!
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="#"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="#Usage">View Demo</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="#">Report Bug</a>
   </p>
+
 </div>
-
-<!-- TABLE OF CONTENTS -->
-
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
 
 <!-- ABOUT THE PROJECT -->
 
@@ -57,13 +34,12 @@ Git is a useful version control tool, have you ever wonder about the algorithm b
 Main features:
 
 * It's small, the whole codebase is around 2k lines
-* You have all the important command like `init`, `commit`, `status`, `restore` and so on.
+* You have all the core commands like `init`, `commit`, `status`, `restore` and so on.
 * It's written in Java with some modern syntax
 
 I'm planning on writing an article about it, so stay tuned!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 <!-- GETTING STARTED -->
 
@@ -71,9 +47,9 @@ I'm planning on writing an article about it, so stay tuned!
 
 ### Prerequisites
 
-You should have a working jdk distribution in your machine, I'm using OpenJDK17
+You should have a working jdk distribution on your machine, I'm using OpenJDK17
 
-* mac brew package manager
+* install openjdk with brew package manager (Mac)
   
   ```sh
   brew install java
@@ -81,11 +57,11 @@ You should have a working jdk distribution in your machine, I'm using OpenJDK17
 
 ### Installation
 
-You can either build the project yourself or use the existing build
+You can either build the project yourself or run the existing jar file
 
 * Clone this repository and open the project in intellij, go to `build > build artifact > my-git`
 * Or build using `maven build`
-* Or run existing build 
+* Or run existing jar file
   ```sh 
   cd <project-directory>
   java -jar out/artifacts/my_git_jar/my-git.jar
@@ -112,7 +88,7 @@ You can directly run the maven project in Intellij or run the shell script `git-
 
 ## Usage
 
-For every command you could specify `-h` or `--help` flag to show helps, etc:
+For every command and sub-commands you could specify `-h` or `--help` flag to show helps, for example:
 
 ```sh
 ➜ git-run -h
@@ -135,19 +111,30 @@ Commands:
   commit       Save current state
 ```
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+Initialize a version control repository
+
+![Init Demo](doc/init.gif)
+
+Show version control status
+
+![Status Demo](doc/status.gif)
+
+Commit changes
+
+![Commit Demo](doc/commit.gif)
+
+_TODO: Add more examples_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
 
 <!-- ROADMAP -->
 
 ## Roadmap
 
 - [x] Write unit tests
-- [ ] Write article
 - [ ] Add branching support
-- [ ] Multi-language Support
-  - [ ] Chinese
+- [ ] Write an article
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
