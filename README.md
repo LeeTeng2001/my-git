@@ -4,23 +4,20 @@
 <br />
 
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="doc/img/logo.png" alt="Logo" width="160" height="80">
-  </a>
-
-<h3 align="center">An Educational Version Control System</h3>
-
-<p align="center">
-    A version control system like Git!
-    <br />
-    <a href="#"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="#Usage">View Demo</a>
-    ·
-    <a href="#">Report Bug</a>
-  </p>
-
+   <a href="https://github.com/LeeTeng2001/my-git">
+    <img src="doc/img/logo.png" alt="Project Logo" width="160" height="80">
+   </a>
+   <h3 align="center">An Educational Version Control System</h3>
+   <p align="center">
+      A version control system like Git!
+      <br />
+      <a href="#Usage"><strong>Explore the examples »</strong></a>
+      <br />
+      <br />
+      <a href="#Usage">View Demo</a>
+      ·
+      <a href="https://github.com/LeeTeng2001/my-git/issues">Report Bug</a>
+   </p>
 </div>
 
 <!-- ABOUT THE PROJECT -->
