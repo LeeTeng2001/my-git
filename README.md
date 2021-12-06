@@ -26,13 +26,14 @@
 
 ![demo](doc/demo%201.gif)
 
-Git is a useful version control tool, have you ever wonder about the algorithm behind it? This is my attempt at creating a small & functional version of a version control tool like Git.
+Git is a useful version control tool we use daily, have you ever wonder about the algorithm behind it? This is my attempt at creating a small & functional version control tool like Git.
 
 Main features:
 
 * It's small, the whole codebase is around 2k lines
 * You have all the core commands like `init`, `commit`, `status`, `restore` and so on.
 * It's written in Java with some modern syntax
+* It's compatible with some git files
 
 I'm planning on writing an article about it, so stay tuned!
 
@@ -120,6 +121,8 @@ Commit changes
 
 ![Commit Demo](doc/commit.gif)
 
+
+
 _TODO: Add more examples_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -158,7 +161,7 @@ Bryan Lee - leeteng2001@sjtu.edu.cn
 
 ## Acknowledgments
 
-Special thanks to the following resources
+Special thanks to the following resource
 
 * [Git format documentation](https://github.com/git/git/tree/master/Documentation/technical)
 * [MD Book](https://github.com/rust-lang/mdBook)

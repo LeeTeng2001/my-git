@@ -43,8 +43,7 @@ public final class GitHashObjectCli implements Callable<Integer> {
             printLog("Object hash is: " + computedHash, MsgLevel.INFO);
 
         } catch (IOException e) {
-            printLog("File doesn't exist at: " + objPath, MsgLevel.ERROR);
-            e.printStackTrace();
+            printLog("Reading error for: " + objPath, MsgLevel.ERROR);
             return 1;
         }
 
