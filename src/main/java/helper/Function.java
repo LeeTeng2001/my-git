@@ -17,6 +17,7 @@ import java.util.zip.Inflater;
 import static helper.Utility.printLog;
 
 public final class Function {
+    // Read object from a repo and ABSOLUTE hash
     public static GitObject readGitObject(GitRepository repo, String hash) {
         if (hash == null) {  // from name resolve function
             printLog("Hash is null before reading git object ", Utility.MsgLevel.ERROR);
@@ -77,7 +78,7 @@ public final class Function {
         return null;
     }
 
-    // We can choose to compute the hash without writing
+    // We can choose to compute the object hash with or without writing
     public static String writeGitObject(GitObject object, Boolean write) {
         byte[] finalData;
         try {
@@ -192,6 +193,7 @@ public final class Function {
         }
     }
 
+    // Get absolute location of a reference
     private static String resolveRef(GitRepository repo, Path filePath) {
         // Reference file is always in ASCII / UTF-8 compatible, strip newline
         try {
@@ -210,6 +212,7 @@ public final class Function {
         }
     }
 
+    // Get all references under ref directory
     private static void getAllRefs(GitRepository repo, Path gitDirPath, TreeMap<String, String> res) {
         var children = gitDirPath.toFile().listFiles();
         if (children == null) return;
@@ -224,6 +227,7 @@ public final class Function {
         }
     }
 
+    // Public API for getting all references
     public static TreeMap<String, String> getAllRefs(GitRepository repo) {
         // Ordered map because we want to maintain insertion order
         var res = new TreeMap<String, String>();
@@ -270,7 +274,7 @@ public final class Function {
         return candidates;
     }
 
-    // Public api, will check hash and tags
+    // Public API, will check hashes and tags, minimum hash length is 4
     public static String fuzzyNameMatch(GitRepository repo, String candidate) {
         var candidates = hashNameResolve(repo, candidate);
         if (candidates.size() > 1) {
@@ -293,5 +297,4 @@ public final class Function {
         // No match
         return null;
     }
-
 }

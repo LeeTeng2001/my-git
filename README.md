@@ -5,7 +5,7 @@
 
 <div align="center">
    <a href="https://github.com/LeeTeng2001/my-git">
-    <img src="doc/img/logo.png" alt="Project Logo" width="160" height="80">
+    <img src="https://github.com/LeeTeng2001/my-git/doc/img/logo.png" alt="Project Logo" width="160" height="80">
    </a>
    <h3 align="center">An Educational Version Control System</h3>
    <p align="center">
