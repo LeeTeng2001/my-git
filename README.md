@@ -3,7 +3,7 @@
 <!-- PROJECT HEADER -->
 <br />
 
-<div style="text-align: center;">
+<div align="center">
    <a href="https://github.com/LeeTeng2001/my-git">
     <img src="https://github.com/LeeTeng2001/my-git/raw/main/doc/Img/logo.png" alt="Project Logo" width="160" height="80">
    </a>
@@ -37,7 +37,7 @@ Main features:
 
 I'm planning on writing an article about it, so stay tuned!
 
-<p style="text-align: right;">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 
@@ -80,7 +80,7 @@ You can directly run the maven project in Intellij or run the shell script `git-
   ./git-run <some_command>
   ```
 
-<p style="text-align: right;">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 
@@ -125,7 +125,7 @@ Commit changes
 
 _TODO: Add more examples_
 
-<p style="text-align: right;">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- ROADMAP -->
@@ -137,7 +137,7 @@ _TODO: Add more examples_
 - [ ] Write an article
 
 
-<p style="text-align: right;">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- LICENSE -->
 
@@ -145,7 +145,7 @@ _TODO: Add more examples_
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p style="text-align: right;">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTACT -->
 
@@ -155,7 +155,7 @@ Bryan Lee - leeteng2001@sjtu.edu.cn
 
 <!-- Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name) -->
 
-<p style="text-align: right;">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
 
@@ -166,5 +166,5 @@ Special thanks to the following resource
 * [Git format documentation](https://github.com/git/git/tree/master/Documentation/technical)
 * [PicoCLI](https://picocli.info/)
 
-<p style="text-align: right;">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
